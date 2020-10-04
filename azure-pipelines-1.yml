@@ -17,13 +17,9 @@ trigger:
       - UiPathAzureDevOpsExample/*
 
 # You can switch this to use an existing build machine
-pool:
-  vmImage: 'windows-latest'
+pool: MYLAPTOP
 
 steps:
-
-# Install files needed for packaging/deploying. If you're using an build machine with UiPath already installed, you can remove this line.
-- task: UiPathInstallPlatform-preview@2
 
 # Package the project.
 - task: UiPathPack@2
@@ -32,14 +28,14 @@ steps:
     versionType: 'AutoVersion'
     projectJsonPath: '$(Build.SourcesDirectory)\$(projectPath)'
     # This should match the name of the Orchestrator you are deploying to, which is defined in 'Service Connections' in Azure.
-    orchestratorConnection: prod
+    orchestratorConnection: DEV
     outputPath: '$(Build.ArtifactStagingDirectory)\Output'
 
 - task: UiPathDeploy@2
   condition: and(succeeded(), startsWith(variables['Build.SourceBranchName'], 'release'))
   inputs:
     # This should match the name of the Orchestrator you are deploying to, which is defined in 'Service Connections' in Azure.
-    orchestratorConnection: test
+    orchestratorConnection: DEV
     packagesPath: '$(Build.ArtifactStagingDirectory)\Output'
     folderName: 'Default'
     
@@ -47,6 +43,6 @@ steps:
   condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
   inputs:
     # This should match the name of the Orchestrator you are deploying to, which is defined in 'Service Connections' in Azure.
-    orchestratorConnection: prod
+    orchestratorConnection: DEV
     packagesPath: '$(Build.ArtifactStagingDirectory)\Output'
     folderName: 'Default'
