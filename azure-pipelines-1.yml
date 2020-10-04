@@ -10,7 +10,7 @@ stages:
         pool: MYLAPTOP
 
         steps:
-          - script: C:\UiPath\UiRobot.exe pack $(Build.SourcesDirectory)\project.json -o $(Build.ArtifactStagingDirectory)\ -v 1.0.$(Build.BuildNumber)
+          - script: C:\Users\Satish\AppData\Local\UiPath\app-20.10.0-beta0149\UiRobot.exe pack $(Build.SourcesDirectory)\project.json -o $(Build.ArtifactStagingDirectory)\ -v 1.0.$(Build.BuildNumber)
             displayName: "Build the artifact"
           - publish: $(Build.ArtifactStagingDirectory)
             artifact: drop
