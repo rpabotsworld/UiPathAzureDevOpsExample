@@ -1,34 +1,52 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# This template will build the nuget package for the project on a commit to the master or a release* branch,
+# then it will deploy to the 'prod' Orchestrator for the master branch, or the 'test' Orchestrator for a release* branch.
+# There is no approval step in this pipeline, though package versions are not automatically changed to latest. That must be updated manually in Orchestrator after publishing.
+
+variables:
+  # Update this to point to the path to your Project folder (folder containing the project.json).
+  projectPath: UiPathAzureDevOpsExample
 
 trigger:
-- master
+  # Update branch triggers here.
+  branches:
+    include:
+      - master
+      - release*
+  paths:
+    include:
+      - UiPathAzureDevOpsExample/*
 
+# You can switch this to use an existing build machine
 pool:
-  vmImage: '-latest'
+  vmImage: 'windows-latest'
 
-# This pipeline is broken into stages for the approval functionality. Stages are ran independantly, which means the pipeline can pause until the approval is received. 
-stages:
-# Build the nuget package.
-- stage: Build
-  jobs:
-  - job: BuildJob
-    pool:  # Update this if using dedicated build pool
-      vmImage: 'windows-latest'
-    workspace:
-      clean: all
-    steps:
-    - script: 'echo project path: ${{ parameters.projectPath }}, folder name: ${{ parameters.folderName }}, versioning strategy: ${{ parameters.versioningStrategy }}, environments: ${{ parameters.environments }}'
-      displayName: Log parameters
-    - task: UiPathInstallPlatform-preview@2  # This installs required exes. Not necessary if using a dedicated build machine.
-    - task: UiPathPack@2
-      inputs:
-        versionType: ${{ parameters.versioningStrategy }}
-        projectJsonPath: '$(Build.SourcesDirectory)\${{ parameters.projectPath }}'
-        orchestratorConnection: Orchestrator-Dev-Default  # Update this to a service connection for your Orchestrator.
-        outputPath: '$(Build.ArtifactStagingDirectory)\Output'
-    # Publish the nuget package for later stages.
-    - publish: $(Build.ArtifactStagingDirectory)\Output
-      artifact: drop
+steps:
+
+# Install files needed for packaging/deploying. If you're using an build machine with UiPath already installed, you can remove this line.
+- task: UiPathInstallPlatform-preview@2
+
+# Package the project.
+- task: UiPathPack@2
+  inputs:
+    # You might want to change the versionType logic.
+    versionType: 'AutoVersion'
+    projectJsonPath: '$(Build.SourcesDirectory)\$(projectPath)'
+    # This should match the name of the Orchestrator you are deploying to, which is defined in 'Service Connections' in Azure.
+    orchestratorConnection: prod
+    outputPath: '$(Build.ArtifactStagingDirectory)\Output'
+
+- task: UiPathDeploy@2
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranchName'], 'release'))
+  inputs:
+    # This should match the name of the Orchestrator you are deploying to, which is defined in 'Service Connections' in Azure.
+    orchestratorConnection: test
+    packagesPath: '$(Build.ArtifactStagingDirectory)\Output'
+    folderName: 'Default'
+    
+- task: UiPathDeploy@2
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+  inputs:
+    # This should match the name of the Orchestrator you are deploying to, which is defined in 'Service Connections' in Azure.
+    orchestratorConnection: prod
+    packagesPath: '$(Build.ArtifactStagingDirectory)\Output'
+    folderName: 'Default'
