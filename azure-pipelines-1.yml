@@ -1,0 +1,34 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: '-latest'
+
+# This pipeline is broken into stages for the approval functionality. Stages are ran independantly, which means the pipeline can pause until the approval is received. 
+stages:
+# Build the nuget package.
+- stage: Build
+  jobs:
+  - job: BuildJob
+    pool:  # Update this if using dedicated build pool
+      vmImage: 'windows-latest'
+    workspace:
+      clean: all
+    steps:
+    - script: 'echo project path: ${{ parameters.projectPath }}, folder name: ${{ parameters.folderName }}, versioning strategy: ${{ parameters.versioningStrategy }}, environments: ${{ parameters.environments }}'
+      displayName: Log parameters
+    - task: UiPathInstallPlatform-preview@2  # This installs required exes. Not necessary if using a dedicated build machine.
+    - task: UiPathPack@2
+      inputs:
+        versionType: ${{ parameters.versioningStrategy }}
+        projectJsonPath: '$(Build.SourcesDirectory)\${{ parameters.projectPath }}'
+        orchestratorConnection: Orchestrator-Dev-Default  # Update this to a service connection for your Orchestrator.
+        outputPath: '$(Build.ArtifactStagingDirectory)\Output'
+    # Publish the nuget package for later stages.
+    - publish: $(Build.ArtifactStagingDirectory)\Output
+      artifact: drop
