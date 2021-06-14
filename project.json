@@ -3,9 +3,9 @@
   "description": "Publish Packages to orchestrators with Azure DevOps",
   "main": "Main.xaml",
   "dependencies": {
-    "UiPath.Excel.Activities": "[2.9.2-preview]",
-    "UiPath.System.Activities": "[20.10.0-preview]",
-    "UiPath.UIAutomation.Activities": "[20.10.0-preview]"
+    "UiPath.Excel.Activities": "[2.10.4]",
+    "UiPath.System.Activities": "[21.4.1]",
+    "UiPath.UIAutomation.Activities": "[21.4.4]"
   },
   "webServices": [],
   "entitiesStores": [],
@@ -39,5 +39,16 @@
     "modernBehavior": false
   },
   "expressionLanguage": "VisualBasic",
-  "isTemplate": false
+  "entryPoints": [
+    {
+      "filePath": "Main.xaml",
+      "uniqueId": "ee55f915-89a9-4f2f-a8be-b70d2e26fe79",
+      "input": [],
+      "output": []
+    }
+  ],
+  "isTemplate": false,
+  "templateProjectData": {},
+  "publishData": {},
+  "targetFramework": "Legacy"
 }
