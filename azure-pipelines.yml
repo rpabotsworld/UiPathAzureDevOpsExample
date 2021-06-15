@@ -16,7 +16,7 @@ stages:
           projectJsonPath: '$(Build.SourcesDirectory)\project.json'
           outputType: 'Process'
           orchestratorConnection: 'UiPath DEV'
-          outputPath: '$(Build.ArtifactStagingDirectory)\Output'
+          outputPath: '$(Build.ArtifactStagingDirectory)'
       - publish: $(Build.ArtifactStagingDirectory)
         artifact: drop
 
@@ -49,5 +49,5 @@ stages:
             - task: UiPathDeploy@2
               inputs:
                 orchestratorConnection: 'UiPath DEV'
-                packagesPath: '$(Build.ArtifactStagingDirectory)\Output'
+                packagesPath: '$(Pipeline.Workspace)\drop\'
                 folderName: 'Shared'
