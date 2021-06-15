@@ -51,3 +51,19 @@ stages:
                 orchestratorConnection: 'UiPath DEV'
                 packagesPath: '$(Pipeline.Workspace)\drop\'
                 folderName: 'Shared'
+  - stage: TestDEV
+    displayName:  Test After Publish
+    dependsOn: DeployDEV
+    condition: succeeded()
+    jobs:
+      - job: TestDEV
+        pool: LAPTOP-Q338O4FK
+        steps:
+          - task: UiPathTest@2
+            inputs:
+              testTarget: 'TestSet'
+              orchestratorConnection: 'UiPath DEV'
+              testSet: 'UiPathAzureDevOps_Tests'
+              folderName: 'Shared'
+              testReportDestination: '$(Pipeline.Workspace)\drop\'
+
