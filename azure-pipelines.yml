@@ -30,3 +30,22 @@ stages:
             folderName: 'Shared'
             assetActionType: 'Deploy'
             csvFile: '$(Build.SourcesDirectory)\Data\Assests.csv'
+
+  - stage: DeployDEV
+    displayName: Deploy build artifact to DEV
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: deployDEV
+        displayName: Deploy package to DEV Orchestrator
+        pool: LAPTOP-Q338O4FK
+        environment: DEV
+        strategy:
+         runOnce:
+          deploy:
+           steps:
+            - task: UiPathDeploy@2
+              inputs:
+                orchestratorConnection: 'UiPath DEV'
+                packagesPath: '$(Build.ArtifactStagingDirectory)\Output'
+                folderName: 'Shared'
