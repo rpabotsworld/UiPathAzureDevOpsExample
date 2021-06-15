@@ -1,7 +1,7 @@
 trigger:
   - master
 variables:
-  - group: UiPath
+  - group: DEV
 
 stages:
   - stage: Build
