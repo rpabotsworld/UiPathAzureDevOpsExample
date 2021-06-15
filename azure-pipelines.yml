@@ -12,7 +12,7 @@ stages:
       steps:    
       - task: UiPathPack@2
         inputs:
-          versionType: 'AutoVersion'
+          versionType: 'CurrentVersion'
           projectJsonPath: '$(Build.SourcesDirectory)\project.json'
           outputType: 'Process'
           orchestratorConnection: 'UiPath DEV'
