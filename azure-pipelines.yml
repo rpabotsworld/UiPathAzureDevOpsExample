@@ -17,6 +17,8 @@ stages:
           outputType: 'Process'
           orchestratorConnection: 'UiPath DEV'
           outputPath: '$(Build.ArtifactStagingDirectory)\Output'
+      - publish: $(Build.ArtifactStagingDirectory)
+        artifact: drop
 
   - stage: Assest
     displayName: Create Assests
