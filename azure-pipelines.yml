@@ -52,6 +52,26 @@ stages:
                 packagesPath: '$(Pipeline.Workspace)\drop\'
                 folderName: 'Shared'
                 
+  - stage: WorkflowAnalyser
+    displayName: RunWorkflow Analyser
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+        - job: WorkflowAnalyser
+          displayName: AnalyseProject Using Workflow Cli
+          pool: LAPTOP-Q338O4FK
+          steps:
+          - task: PowerShell@2
+            inputs:
+              targetType: filePath
+              filePath: $(Build.SourcesDirectory)\Data\Workflow-Analyzer-CLI-Script
+              arguments: > # Use this to avoid newline characters in multiline string
+                -ProjectFilePath $(Build.SourcesDirectory)\project.json
+                -ExecutableFilePath "C:\Users\prasa\AppData\Local\UiPath\app-21.4.4\UiPath.Studio.CommandLine.exe"
+                -OutputFilePath '$(Pipeline.Workspace)\drop\Workflow-Analysis.json'
+              workingDirectory: $(Build.SourcesDirectory)
+            displayName: 'Analyse Project'
+
   - stage : CodeQuality
     displayName: Check Code Analysis
     dependsOn: Build
