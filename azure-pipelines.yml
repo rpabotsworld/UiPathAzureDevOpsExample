@@ -63,9 +63,11 @@ stages:
             inputs:
               SonarCloud: 'Sonar'
               organization: 'rpabotsworld'
-              scannerMode: 'MSBuild'
-              projectKey: 'rpabotsworld_UiPathAzureDevOpsExample'
-              projectName: 'UiPathAzureDevOpsExample'
+              scannerMode: 'CLI'
+              configMode: 'manual'
+              cliProjectKey: 'rpabotsworld_UiPathAzureDevOpsExample'
+              cliProjectName: 'UiPathAzureDevOpsExample'
+              cliSources: '.'
           - task: SonarCloudAnalyze@1
 
 
