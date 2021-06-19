@@ -69,6 +69,9 @@ stages:
               cliProjectName: 'UiPathAzureDevOpsExample'
               cliSources: '.'
           - task: SonarCloudAnalyze@1
+          - task: SonarCloudPublish@1
+            inputs:
+              pollingTimeoutSec: '300'
 
 
   - stage: TestDEV
